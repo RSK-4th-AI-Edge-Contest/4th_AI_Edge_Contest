@@ -1,0 +1,63 @@
+model:
+    type: 'HarDNet'
+    in_channels: 3
+    pretrained: cityscapes
+
+data:
+    path: 'train_data'
+    subset:
+        train:
+            - 0
+            - 1
+            - 2
+            - 3
+        val:
+            - 4
+    class_aggregation: True
+
+training:
+    epoch: 300
+    train_batch_size: 8
+    val_batch_size: 1
+    num_workers: 4
+
+augmentation:
+    random_scale:
+        is_applied: True
+        params:
+            scale_limit: 0.5
+            p: 0.5
+    random_crop:
+        is_applied: True  # must be True
+        params:
+            height: 608
+            width: 960
+            always_apply: True
+    LRflip:
+        is_applied: True
+        params:
+            p: 0.5
+    brightness_shift:
+        is_applied: False
+        params:
+            limit: 0.2
+            p: 0.5
+
+optimizer:
+    type: 'SGD'  # Adam, AdamW, RAdam, SGD
+    params:
+        lr: 0.001
+        momentum: 0.9
+        weight_decay: 0.0001
+
+scheduler:
+    type: 'cosine_annealing_with_warmup'
+    params:
+        T_0: 300
+        T_mult: 1
+        eta_max: 0.01
+        T_up: 30
+        gamma: 1.0
+    
+criterion:
+    type: 'CrossEntropy'  # CrossEntropy, Dice, CE_Dice, Focal, IoU, InverseFrequency, Lovasz
